@@ -1,0 +1,8 @@
+package com.cskaoyan.market.service;
+
+import com.cskaoyan.market.db.domain.MarketSystem;
+
+public interface MarketConfigService {
+    MarketSystem queryMarketConfigByName(String name);
+    void updateById(MarketSystem marketSystem);
+}
