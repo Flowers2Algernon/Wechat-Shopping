@@ -4,8 +4,8 @@ spring:
 server:
   port: 8083
 aliyun:
-  accessKeyId: LTAI5t8gpxPTCR6W58RnZq4u
-  accessKeySecret: mVPbpbxia0JQotb7HyJAREV8QUuq8h
+  accessKeyId:
+  accessKeySecret: 
   oss:
     endPoint: oss-cn-beijing.aliyuncs.com
     bucketName: cskaoyan
