@@ -1,95 +1,75 @@
 package com.cskaoyan.market.controller;
 
-import com.cskaoyan.market.db.domain.MarketAdmin;
-import com.cskaoyan.market.db.domain.MarketRole;
-import com.cskaoyan.market.db.domain.MarketRoleLabelOptions;
-import com.cskaoyan.market.service.AdminRoleOptionsService;
-import com.cskaoyan.market.service.MarketAdminRoleService;
-import com.cskaoyan.market.service.impl.AdminRoleOptionsServiceImpl1;
-import com.cskaoyan.market.util.JacksonUtil;
-import com.cskaoyan.market.util.ResponseUtil;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.crypto.hash.Hash;
+import com.cskaoyan.market.util.Permission;
+import com.cskaoyan.market.util.PermissionUtil;
+import com.cskaoyan.market.vo.PermVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
+/**
+ * @ClassName AdminRoleController
+ * @Description: TODO
+ * @Author 远志 zhangsong@cskaoyan.onaliyun.com
+ * @Date 2023/4/6 9:38
+ * @Version V1.0
+ **/
 @RestController
 @RequestMapping("admin/role")
 public class AdminRoleController {
+
+    //TODO 将此处替换成你的controller包名
+//    private static final String YOUR_PACKAGE_NAME = "com.cskaoyan.market.controller";
+
+    private static final String YOUR_PACKAGE_NAME = "com.cskaoyan.market.controller.admin";
+
+    private List<PermVo> systemPermissions;
+
+    private Set<String> systemPermissionsString = null;
+
+
     @Autowired
-    AdminRoleOptionsService adminRoleOptionsService;
-    @Autowired
-    MarketAdminRoleService marketAdminRoleService;
+    private ApplicationContext context;
 
-    @GetMapping("options")
-    private Object options(HttpServletRequest req, HttpServletResponse resp) {
-        //请求体中什么也没有，生成一个value和label的list当作data返回即可
-        List<MarketRoleLabelOptions> list = adminRoleOptionsService.options();
-        Object o = ResponseUtil.okList(list);
-        return o;
-    }
+    @RequestMapping("permission")
+    public Object permission(Integer roleId){
+        //系统的权限已经给大家写好了
+        //获取到系统的所有的权限配置，也就是controller的handle方法上面标注的@RequiresPermissions注解
+        List<PermVo> systemPermissions = getSystemPermissions();
+        //当前用户所拥有的权限信息，数据库中当前用户存储的权限；其中需要注意的是如果是*，那么需要将其转换成systemPermission
+        //因为前端无法识别出*
+        Set<String> assignedPermissions = getAssignedPermissions(roleId);
 
-    @GetMapping("list")
-    public Object list(@RequestParam(value = "page", defaultValue = "1") Integer page, @RequestParam(value = "limit", defaultValue = "20") Integer limit, @RequestParam(value = "name", defaultValue = "") String name, @RequestParam(value = "sort", defaultValue = "add_time") String sort, @RequestParam(value = "order", defaultValue = "desc") String order) {
-        List<MarketRole> list = marketAdminRoleService.list(page, limit, name, sort, order);
-        return ResponseUtil.okList(list);
-    }
-
-    @PostMapping("create")
-    public Object create(@RequestBody Map map) {
-        String name = (String) map.get("name");
-        String desc = (String) map.get("desc");
-        if (StringUtils.isEmpty(name)) {
-            return ResponseUtil.badArgument();
-        }
-        MarketRole newRole = marketAdminRoleService.create(name, desc);
-        return ResponseUtil.ok(newRole);
-    }
-
-    @PostMapping("delete")
-    public Object delete(@RequestBody Map map) {
-        Integer id = (Integer) map.get("id");
-        marketAdminRoleService.delete(id);
-        return ResponseUtil.ok();
-    }
-
-    @PostMapping("update")
-    public Object update(@RequestBody Map map) {
-        String name = (String) map.get("name");
-        String desc = (String) map.get("desc");
-        Integer id = (Integer) map.get("id");
-        marketAdminRoleService.update(id, name, desc);
-        return ResponseUtil.ok();
-    }
-
-    @PostMapping("permissions")
-    public Object permissions(@RequestBody Map map) {
-        Integer roleId = (Integer) map.get("roleId");
-        Map<Integer, String> permissions = (Map<Integer, String>) map.get("permissions");
-        marketAdminRoleService.postPermissions(roleId, permissions);
-        return ResponseUtil.ok();
-    }
-
-    @GetMapping("permissions")
-    public Object permissions(@RequestParam Integer roleId) {
-        LinkedHashMap<Integer, String> assignedPermissions = marketAdminRoleService.getPermissions(roleId);
-        //how to get full systemPermissions
-
-        HashMap<String, Object> stringObjectHashMap = new HashMap<>();
-        stringObjectHashMap.put("assignedPermissions", assignedPermissions);
         return null;
     }
+
+    /**
+     * 获取当前系统所有的权限
+     * @return
+     */
+    private List<PermVo> getSystemPermissions() {
+        String basicPackage = YOUR_PACKAGE_NAME;
+        if (systemPermissions == null) {
+            List<Permission> permissions = PermissionUtil.listPermission(context, basicPackage);
+            systemPermissions = PermissionUtil.listPermVo(permissions);
+            systemPermissionsString = PermissionUtil.listPermissionString(permissions);
+        }
+        return systemPermissions;
+    }
+
+    /**
+     * 获取当前roleId所赋予的权限
+     * 如果查询到的权限是*，则需要将其转换成系统权限，因为前端无法识别出*代表所有权限
+     * @param roleId
+     * @return
+     */
+    private Set<String> getAssignedPermissions(Integer roleId) {
+        return null;
+    }
+
+
 }

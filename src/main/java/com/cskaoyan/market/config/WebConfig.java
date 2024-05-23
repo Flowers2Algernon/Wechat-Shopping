@@ -15,9 +15,10 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
+import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.time.LocalDate;
@@ -27,18 +28,19 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
 /**
- * @Author 远志 zhangsong@cskaoyan.onaliyun.com
- * @Date 2024/5/17 17:31
- * @Version 1.0
+ * @Author: jyc
+ * @Date: 2024/5/20 20:41
  */
+
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-    //multipartConfig文件上传功能
-//    @Bean
-//    public MultipartResolver multipartResolver(){
-//        return new CommonsMultipartResolver();
-//    }
 
+    //向容器中去注册一个文件上传解析器
+    //这里面需要特别指出的是方法的名称必须叫做multipartResolver
+    @Bean
+    public MultipartResolver multipartResolver(){
+        return new CommonsMultipartResolver();
+    }
 
     //向容器中去注册一个objectMAPPER,因为框架内部的objectMapper没有设置过时间，处理时间时可能会有问题
     @Bean
@@ -63,13 +65,11 @@ public class WebConfig implements WebMvcConfigurer {
         return objectMapper;
     }
 
-
-    // 注册配置filter
     @Bean
     public FilterRegistrationBean corsFilter(){
         FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>();
         bean.setFilter(new CorsFilter());
-        bean.addUrlPatterns("/*");
+        bean.addUrlPatterns("/admin/*");
         //设置顺序， 越小越排名靠前
         bean.setOrder(1);
         return bean;
@@ -83,5 +83,10 @@ public class WebConfig implements WebMvcConfigurer {
         //设置顺序， 越小越排名靠前
         bean.setOrder(2);
         return bean;
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/wx/storage/fetch/**").addResourceLocations("file:D:/image/");
     }
 }

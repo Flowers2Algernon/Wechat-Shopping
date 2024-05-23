@@ -2,8 +2,8 @@ package com.cskaoyan.market.filter;
 
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.servlet.*;
-import javax.servlet.annotation.WebFilter;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -13,25 +13,7 @@ import java.io.IOException;
  * @Date 2024/5/4 9:25
  * @Version 1.0
  */
-// @WebFilter("/*")
-// public class CharacterEncodingFilter implements Filter {
-//     @Override
-//     public void init(FilterConfig filterConfig) throws ServletException {
-//
-//     }
-//
-//     @Override
-//     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-//         request.setCharacterEncoding("utf-8");
-//         response.setContentType("text/html;charset=utf-8");
-//         chain.doFilter(request, response);
-//     }
-//
-//     @Override
-//     public void destroy() {
-//
-//     }
-// }
+
 public class CharacterEncodingFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
