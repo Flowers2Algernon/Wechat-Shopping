@@ -10,8 +10,8 @@ aliyun:
     endPoint: oss-cn-beijing.aliyuncs.com
     bucketName: cskaoyan
   sms:
-    signName: stone4j
-    templateCode: SMS_173765187
+    signName: 
+    templateCode: 
 mybatis:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
