@@ -7,7 +7,7 @@ aliyun:
   accessKeyId:
   accessKeySecret: 
   oss:
-    endPoint: oss-cn-beijing.aliyuncs.com
+    endPoint: 
     bucketName: cskaoyan
   sms:
     signName: 
